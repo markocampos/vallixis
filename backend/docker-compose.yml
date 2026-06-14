@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: vallixis_postgres
+    environment:
+      POSTGRES_USER: vallixis
+      POSTGRES_PASSWORD: vallixis
+      POSTGRES_DB: vallixis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vallixis"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vallixis_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vallixis_backend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://vallixis:vallixis@postgres:5432/vallixis
+      REDIS_URL: redis://redis:6379
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./src:/app/src
+      - /tmp/vallixis/sites:/vallixis/sites
+      - /tmp/vallixis/backups:/vallixis/backups
+      - /tmp/vallixis/queue:/vallixis/queue
+
+volumes:
+  postgres_data:
+  redis_data:

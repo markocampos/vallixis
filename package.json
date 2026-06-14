@@ -1,0 +1,16 @@
+{
+  "name": "vallixis",
+  "version": "1.0.0",
+  "description": "Managed website hosting for solo entrepreneurs. Get live in minutes.",
+  "author": "Vallixis",
+  "license": "MIT",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "dev": "bash scripts/dev.sh",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "test": "npm run test --workspaces --if-present",
+    "setup": "bash scripts/setup.sh"
+  }
+}
