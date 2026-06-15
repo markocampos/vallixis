@@ -28,13 +28,11 @@ npm install --prefix backend
 echo "Installing frontend dependencies..."
 npm install --prefix frontend
 
+echo "Building frontend..."
+npm run build --prefix frontend
+
+echo "Building backend..."
+npm run build --prefix backend
+
 echo ""
 echo "=== Setup complete ==="
-echo ""
-echo "Next steps:"
-echo "  1. Update backend/.env with your database and API credentials"
-echo "  2. Start PostgreSQL and Redis: cd backend && docker-compose up -d postgres redis"
-echo "  3. Run migrations: cd backend && npm run migrate"
-echo "  4. Seed admin: cd backend && npm run seed:admin"
-echo "  5. Start backend: npm run dev:backend"
-echo "  6. Start frontend: npm run dev:frontend"

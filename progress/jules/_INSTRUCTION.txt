@@ -1,0 +1,45 @@
+This file serves as a guide for logging progress in the Vallixis project.
+
+When logging progress, changes, updates, or newly created features, follow this procedure to ensure logs are fully compatible with the user's local git, memory agent, and Obsidian notes:
+
+1. Create a new `.md` file in `progress/jules/` with the naming convention `YYYY-MM-DD-kebab-case-title.md`.
+2. The markdown file must include Obsidian-compatible frontmatter at the top.
+3. The file must include an H1 title indicating the overarching update theme or phase.
+4. Provide an H2 section indicating the date (in double brackets like `[[YYYY-MM-DD]]`) and a summary.
+5. Provide a 'Fixes Applied' or 'Changes Made' section with H4 subsections containing checkboxes `✅` or `❌` for each major change. Include 'Problem' and 'Fix' blocks.
+6. Provide a 'Security Note' or relevant context section if applicable.
+7. Include a 'Next Phase' section indicating the next steps.
+
+Example Template:
+```md
+---
+date: YYYY-MM-DD
+tags:
+  - changelog
+  - phase_name
+  - audit
+  - fixes
+  - vallixis
+---
+
+# Update Log — Phase Name
+
+## [[YYYY-MM-DD]] - Brief Summary Title
+**Time:** YYYY-MM-DD HH:MMZ – HH:MMZ
+**Focus:** High level summary of what was done.
+
+---
+
+### Fixes Applied
+
+#### 1. ✅ `path/to/file` — Description of Fix
+**Problem:** What was wrong.
+**Fix:** What was done to fix it, optionally with code blocks.
+
+---
+
+### Next Phase
+**Phase X: Name**
+- Next step 1
+- Next step 2
+```
