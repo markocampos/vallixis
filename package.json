@@ -11,6 +11,9 @@
     "dev:frontend": "npm run dev --workspace=frontend",
     "dev:backend": "npm run dev --workspace=backend",
     "test": "npm run test --workspaces --if-present",
-    "setup": "bash scripts/setup.sh"
+    "setup": "bash scripts/setup.sh",
+    "archive-logs": "bash scripts/archive-logs.sh",
+    "push": "bash scripts/push.sh",
+    "pull": "bash scripts/pull.sh"
   }
 }
