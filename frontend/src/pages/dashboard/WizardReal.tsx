@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageMeta from '../../components/PageMeta'
 import WizardProgress from '../../components/WizardProgress'
@@ -9,27 +9,37 @@ import WizardStep4 from '../../components/WizardStep4'
 import WizardPreview from '../../components/WizardPreview'
 import { useWizardStore } from '../../stores/wizardStore'
 import { useWizardDraft } from '../../hooks/useWizardDraft'
+import api from '../../lib/api'
 
 const STEPS = ['About', 'Vibe', 'Template', 'Domain']
 
 export default function WizardReal() {
   const navigate = useNavigate()
-  const { step, setStep, reset } = useWizardStore()
+  const { step, setStep, reset, businessName, description, vibe, template, domainSlug, logo } = useWizardStore()
   const { clearDraft } = useWizardDraft()
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleNext = () => setStep(Math.min(step + 1, 4))
   const handleBack = () => setStep(Math.max(step - 1, 1))
 
   const handleSubmit = async () => {
     setLoading(true)
+    setError('')
     try {
-      // TODO: Phase 1 — submit to /v1/sites endpoint
-      await new Promise(r => setTimeout(r, 1500)) // placeholder
+      await api.post('/sites', {
+        businessName,
+        description,
+        vibe,
+        template,
+        domainSlug,
+        logo
+      })
       clearDraft()
       reset()
       navigate('/dashboard/sites')
-    } catch {
+    } catch (err: any) {
+      setError(err.response?.data?.errors?.[0]?.message || 'Failed to create site. Please try again.')
       setLoading(false)
     }
   }
@@ -42,6 +52,12 @@ export default function WizardReal() {
           <h1 className="text-heading-md text-gray-900">Create a new site</h1>
           <p className="text-sm text-gray-500 mt-1">Answer a few questions and we'll build it for you.</p>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-danger/20 text-danger text-sm px-4 py-3 rounded-md mb-6">
+            {error}
+          </div>
+        )}
 
         <div className="mb-6">
           <WizardProgress currentStep={step} totalSteps={4} labels={STEPS} />

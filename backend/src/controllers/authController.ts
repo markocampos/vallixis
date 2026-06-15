@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { db } from '../config/database'
 import { AppError } from '../middleware/errorHandler'
-import { generateToken, hashToken } from '../utils/crypto'
+import { generateToken, hashToken, decrypt } from '../utils/crypto'
 import { User } from '@shared/types/database'
 import { emailService } from '../services/emailService'
 
@@ -12,7 +12,10 @@ const ACCESS_TOKEN_EXPIRY = '24h'
 const ACCESS_TOKEN_EXPIRY_MS = 24 * 60 * 60 * 1000
 const REFRESH_TOKEN_EXPIRY_DAYS = 7
 const REFRESH_TOKEN_EXPIRY_MS = REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret'
+const JWT_SECRET: string = process.env.JWT_SECRET!
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required')
+}
 
 // In-memory JTI revocation cache: jti -> expiry timestamp
 // Spec requires: add JWT jti to revocation list with TTL = token expiry
@@ -31,10 +34,17 @@ export function isJtiRevoked(jti: string): boolean {
 }
 
 function setTokens(res: Response, user: User, refreshTokenId: string) {
+  let email = user.email
+  try {
+    email = decrypt(user.email)
+  } catch {
+    // If decryption fails, use as-is (for backward compatibility)
+  }
+
   const accessToken = jwt.sign(
     {
       sub: user.id,
-      email: user.email,
+      email,
       plan: user.plan,
       role: user.role,
       jti: crypto.randomUUID()
@@ -132,6 +142,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       throw new AppError(401, 'Invalid credentials')
     }
 
+    if (!user.email_verified) {
+      throw new AppError(403, 'Please verify your email before logging in')
+    }
+
     if (user.locked_until && user.locked_until > new Date()) {
       throw new AppError(401, 'Account locked. Try again later.')
     }
@@ -217,8 +231,14 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
       )
     }
 
-    res.clearCookie('access_token')
-    res.clearCookie('refresh_token')
+    const cookieOpts = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const,
+      path: '/'
+    }
+    res.clearCookie('access_token', cookieOpts)
+    res.clearCookie('refresh_token', cookieOpts)
     
     res.json({
       success: true,
@@ -235,10 +255,17 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
     const userResult = await db.query<User>('SELECT id, email, name, role, plan FROM users WHERE id = $1', [req.user!.sub])
     const user = userResult.rows[0]
     if (!user) throw new AppError(404, 'User not found')
+
+    let email = user.email
+    try {
+      email = decrypt(user.email)
+    } catch {
+      // If decryption fails, use as-is
+    }
       
     res.json({
       success: true,
-      data: user,
+      data: { ...user, email },
       meta: { timestamp: new Date().toISOString(), request_id: crypto.randomUUID() }
     })
   } catch (err) {
@@ -291,8 +318,14 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       meta: { timestamp: new Date().toISOString(), request_id: crypto.randomUUID() }
     })
   } catch (err) {
-    res.clearCookie('access_token')
-    res.clearCookie('refresh_token')
+    const cookieOpts = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const,
+      path: '/'
+    }
+    res.clearCookie('access_token', cookieOpts)
+    res.clearCookie('refresh_token', cookieOpts)
     next(err)
   }
 }

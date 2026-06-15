@@ -16,7 +16,7 @@ export function useWizardDraft() {
       domainSlug: store.domainSlug
     }
     try {
-      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
     } catch {
       // ignore
     }
@@ -25,7 +25,7 @@ export function useWizardDraft() {
   // Restore draft on mount
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(DRAFT_KEY)
+      const raw = localStorage.getItem(DRAFT_KEY)
       if (!raw) return
       const draft = JSON.parse(raw)
       if (draft.businessName) store.setField('businessName', draft.businessName)
@@ -36,10 +36,10 @@ export function useWizardDraft() {
     } catch {
       // ignore
     }
-  }, [])
+  }, []) // intentionally run only on mount to avoid loop
 
   const clearDraft = () => {
-    try { sessionStorage.removeItem(DRAFT_KEY) } catch { /* ignore */ }
+    try { localStorage.removeItem(DRAFT_KEY) } catch { /* ignore */ }
   }
 
   return { clearDraft }

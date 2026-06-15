@@ -4,6 +4,7 @@ export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export const PLANS = {
   free: { name: 'Free', price: 0, displayPrice: 'P0', sites: 1, storage: 50, bandwidth: 1 },
+  founder: { name: 'Founder', price: 15000, displayPrice: 'P150', sites: 1, storage: 500, bandwidth: 10 },
   starter: { name: 'Starter', price: 25000, displayPrice: 'P250', sites: 1, storage: 500, bandwidth: 10 },
   maker: { name: 'Maker', price: 60000, displayPrice: 'P600', sites: 3, storage: 2048, bandwidth: 50 },
   pro: { name: 'Pro', price: 125000, displayPrice: 'P1,250', sites: 10, storage: 10240, bandwidth: 200 }

@@ -1,4 +1,4 @@
-export type UserPlan = 'free' | 'starter' | 'maker' | 'pro'
+export type UserPlan = 'free' | 'founder' | 'starter' | 'maker' | 'pro'
 export type UserStatus = 'active' | 'suspended' | 'cancelled' | 'pending_deletion'
 export type UserRole = 'user' | 'admin'
 

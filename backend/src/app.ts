@@ -19,6 +19,8 @@ import billingRouter from './routes/billing'
 import analyticsRouter from './routes/analytics'
 import supportRouter from './routes/support'
 import adminRouter from './routes/admin'
+import notificationsRouter from './routes/notifications'
+import settingsRouter from './routes/settings'
 
 const app = express()
 
@@ -64,6 +66,12 @@ app.use('/v1/billing', billingRouter)
 app.use('/v1/analytics', analyticsRouter)
 app.use('/v1/support', supportRouter)
 app.use('/v1/admin', adminRouter)
+app.use('/v1/notifications', notificationsRouter)
+app.use('/v1/settings', settingsRouter)
+
+// Serve uploads
+const uploadsPath = process.env.UPLOAD_DIR || '/tmp/vallixis/uploads'
+app.use('/uploads', express.static(uploadsPath))
 
 // Serve frontend
 const frontendDistPath = path.join(__dirname, '../../frontend/dist')

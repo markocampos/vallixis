@@ -14,6 +14,7 @@ export default function Login() {
   const [searchParams] = useSearchParams()
   const { setUser } = useAuthStore()
   const redirect = searchParams.get('redirect') || '/dashboard'
+  const plan = searchParams.get('plan')
 
   const [form, setForm] = useState({ email: '', password: '', turnstileToken: '' })
   const [loading, setLoading] = useState(false)
@@ -33,7 +34,11 @@ export default function Login() {
         turnstileToken: form.turnstileToken
       })
       setUser(res.data.data)
-      navigate(redirect)
+      if (plan && plan !== 'free') {
+        navigate(`/dashboard/upgrade?plan=${plan}`)
+      } else {
+        navigate(redirect)
+      }
     } catch (err: any) {
       setError(err.response?.data?.errors?.[0]?.message || 'Invalid email or password')
     } finally {
@@ -102,7 +107,7 @@ export default function Login() {
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Don't have an account?{' '}
-            <Link to="/register" className="text-primary font-medium hover:underline">Sign up free</Link>
+            <Link to={plan ? `/register?plan=${plan}` : '/register'} className="text-primary font-medium hover:underline">Sign up free</Link>
           </p>
         </div>
       </div>

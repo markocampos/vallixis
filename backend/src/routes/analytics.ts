@@ -1,4 +1,10 @@
 import { Router } from 'express'
+import { getOverviewAnalytics, getSiteAnalytics } from '../controllers/analyticsController'
+import { authenticate } from '../middleware/auth'
+
 const router = Router()
-// TODO: Phase 1 - Routes
+
+router.get('/', authenticate, getOverviewAnalytics)
+router.get('/site/:siteId', authenticate, getSiteAnalytics)
+
 export default router

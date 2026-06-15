@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .get<{ data: AuthUser }>('/auth/me')
       .then((res) => setUser(res.data.data))
       .catch(() => setUser(null))
-  }, [])
+  }, [setLoading, setUser])
 
   const logout = async () => {
     try {

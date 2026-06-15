@@ -13,7 +13,9 @@ import LogoIcon from '../components/LogoIcon'
 
 export default function Register() {
   const navigate = useNavigate()
-    const { setUser } = useAuthStore()
+  const [searchParams] = useSearchParams()
+  const { setUser } = useAuthStore()
+  const plan = searchParams.get('plan')
 
   const [form, setForm] = useState({ name: '', email: '', password: '', agree: false, turnstileToken: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -46,7 +48,11 @@ export default function Register() {
         turnstileToken: form.turnstileToken
       })
       setUser(res.data.data)
-      navigate('/dashboard')
+      if (plan && plan !== 'free') {
+        navigate(`/dashboard/upgrade?plan=${plan}`)
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err: any) {
       setApiError(err.response?.data?.errors?.[0]?.message || 'Registration failed. Please try again.')
     } finally {
@@ -125,7 +131,7 @@ export default function Register() {
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary font-medium hover:underline">Log in</Link>
+            <Link to={plan ? `/login?plan=${plan}` : '/login'} className="text-primary font-medium hover:underline">Log in</Link>
           </p>
         </div>
       </div>

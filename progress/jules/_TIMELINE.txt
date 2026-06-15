@@ -1,0 +1,27 @@
+# Vallixis Project Timeline & Summary
+
+This file serves as a high-level summary of the `.skills/memory` to quickly onboard and prevent hallucination of completed vs. pending tasks.
+
+## **Phase 0: Project Scaffolding & Architecture (Complete - 2026-06-14)**
+- **Monorepo Setup**: Root `package.json` with npm workspaces for `frontend` and `backend`.
+- **Backend Infrastructure**: Express, PostgreSQL (`pg`), Redis, Zod, JWT, Multer, Nodemailer installed and configured. Database initialization completed (`001_initial.sql`).
+- **Frontend Scaffolding**: Vite, React 18, TypeScript, TailwindCSS, PostCSS, React Router, TanStack Query, Zustand, Lucide React installed. Basic routing and layout established.
+- **Audit & Fixes**: Realigned React Query config with spec, added necessary OG images and favicon, created complete template structure (`backend/src/templates/`) for deployments.
+
+## **Phase 1: Authentication Core Logic (Complete - 2026-06-14)**
+- **Endpoints**: Implemented full `authController.ts` handling `register`, `login`, `logout`, `refresh`, `me`, `verifyEmail`, `forgotPassword`, and `resetPassword`.
+- **Security**: Added bcrypt hashing (12 rounds), HTTP-only cookies for JWTs (access + refresh), account lockout after 5 failed attempts (15-min lock), and full audit logging to the `audit_logs` table.
+- **Bot Protection**: Cloudflare Turnstile integration added.
+- **Email Service**: Nodemailer integration with endpoints for verification and reset emails.
+
+## **Recent Updates (2026-06-15)**
+- **Deployment & Scripting Improvements**: 
+  - Archiving scripts introduced (`npm run archive-logs`) to move active logs to `.skills/memory`.
+  - `backup.sh` updated for persistent PostgreSQL dumps, `gzip` compression, and AWS S3 integration.
+  - `deploy.sh` updated to trigger deployment via HTTP POST `curl` with proper `DEPLOY_API_KEY` authentication.
+  - Added Git helper scripts (`npm run push`, `npm run pull`) to simplify repository management.
+
+## **Next Steps / Ongoing**
+- **Phase 2: Sites & Domains** (Backend CRUD + Frontend Integration)
+- Connect the frontend auth UI with the new Phase 1 auth backend endpoints.
+- Continue building out the website builder and deployment pipeline logic.

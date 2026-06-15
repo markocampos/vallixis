@@ -1,4 +1,11 @@
 import { Router } from 'express'
+import { getBillingInfo, getFounderStatus, getInvoices } from '../controllers/billingController'
+import { authenticate } from '../middleware/auth'
+
 const router = Router()
-// TODO: Phase 1 - Routes
+
+router.get('/', authenticate, getBillingInfo)
+router.get('/invoices', authenticate, getInvoices)
+router.get('/founder-status', getFounderStatus)
+
 export default router

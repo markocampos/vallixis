@@ -22,7 +22,10 @@ import Roadmap from './pages/Roadmap'
 import Forum from './pages/Forum'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import WizardDemo from './pages/WizardDemo'
+import SitePreview from './pages/Preview'
 import NotFound from './pages/NotFound'
 
 // Legal pages
@@ -40,6 +43,7 @@ import Billing from './pages/dashboard/Billing'
 import Settings from './pages/dashboard/Settings'
 import Assets from './pages/dashboard/Assets'
 import DashboardSupport from './pages/dashboard/DashboardSupport'
+import Upgrade from './pages/dashboard/Upgrade'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,7 +64,7 @@ export default function App() {
             <ScrollToTop />
             <Routes>
               {/* Public routes */}
-              <Route element={<Layout />}>
+              <Route path="/" element={<Layout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/templates" element={<Templates />} />
                 <Route path="/pricing" element={<Pricing />} />
@@ -76,9 +80,14 @@ export default function App() {
                 <Route path="/cancellation" element={<Cancellation />} />
               </Route>
 
+              {/* Preview route (no layout wrapper) */}
+              <Route path="/preview/:slug" element={<SitePreview />} />
+
               {/* Auth routes (redirect if logged in) */}
               <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
               <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+              <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+              <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
               {/* Dashboard routes (require auth) */}
               <Route
@@ -94,6 +103,7 @@ export default function App() {
                 <Route path="settings" element={<Settings />} />
                 <Route path="assets" element={<Assets />} />
                 <Route path="support" element={<DashboardSupport />} />
+                <Route path="upgrade" element={<Upgrade />} />
               </Route>
 
               {/* Catch all */}

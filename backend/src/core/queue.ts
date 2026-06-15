@@ -41,7 +41,9 @@ export function readJobs(): QueueJob[] {
 
 export function writeJobs(jobs: QueueJob[]): void {
   ensureDir()
-  fs.writeFileSync(QUEUE_FILE, JSON.stringify(jobs, null, 2))
+  const tmpFile = `${QUEUE_FILE}.tmp`
+  fs.writeFileSync(tmpFile, JSON.stringify(jobs, null, 2))
+  fs.renameSync(tmpFile, QUEUE_FILE)
 }
 
 export function addJob(job: Omit<QueueJob, 'attempts' | 'maxAttempts' | 'createdAt' | 'status'>): QueueJob {
@@ -60,7 +62,23 @@ export function addJob(job: Omit<QueueJob, 'attempts' | 'maxAttempts' | 'created
 }
 
 export function isLocked(): boolean {
-  return fs.existsSync(LOCK_FILE)
+  if (!fs.existsSync(LOCK_FILE)) return false
+  try {
+    const lockPid = parseInt(fs.readFileSync(LOCK_FILE, 'utf-8'))
+    // Check if the process that created the lock is still running
+    try {
+      process.kill(lockPid, 0)
+      return true // Process is alive, lock is valid
+    } catch {
+      // Process is dead, lock is stale
+      logger.warn(`Stale lock detected (PID ${lockPid}), removing`)
+      fs.unlinkSync(LOCK_FILE)
+      return false
+    }
+  } catch {
+    // Can't read lock file, treat as unlocked
+    return false
+  }
 }
 
 export function lock(): void {

@@ -14,7 +14,7 @@ export const emailService = {
   sendVerificationEmail: async (to: string, token: string) => {
     const url = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`
     
-    logger.info(`Sending verification email to ${to} with URL: ${url}`)
+    logger.info(`Sending verification email to [redacted]`)
     
     try {
       await transporter.sendMail({
@@ -35,7 +35,7 @@ export const emailService = {
   sendPasswordResetEmail: async (to: string, token: string) => {
     const url = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`
     
-    logger.info(`Sending password reset email to ${to} with URL: ${url}`)
+    logger.info(`Sending password reset email to [redacted]`)
     
     try {
       await transporter.sendMail({
