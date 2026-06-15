@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import path from 'path'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
@@ -64,14 +65,26 @@ app.use('/v1/analytics', analyticsRouter)
 app.use('/v1/support', supportRouter)
 app.use('/v1/admin', adminRouter)
 
-// 404
-app.use((_req, res) => {
-  res.status(404).json({
-    success: false,
-    data: null,
-    meta: { timestamp: new Date().toISOString(), request_id: 'not-found' },
-    errors: [{ field: 'general', message: 'Route not found' }]
-  })
+// Serve frontend
+const frontendDistPath = path.join(__dirname, '../../frontend/dist')
+app.use(express.static(frontendDistPath))
+
+// Catch-all
+app.use((req, res, next) => {
+  if (req.path.startsWith('/v1/')) {
+    res.status(404).json({
+      success: false,
+      data: null,
+      meta: { timestamp: new Date().toISOString(), request_id: 'not-found' },
+      errors: [{ field: 'general', message: 'Route not found' }]
+    })
+  } else {
+    res.sendFile(path.join(frontendDistPath, 'index.html'), (err) => {
+      if (err) {
+        next(err)
+      }
+    })
+  }
 })
 
 // Error handler (must be last)
